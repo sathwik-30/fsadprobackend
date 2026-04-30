@@ -23,75 +23,27 @@ const app = express();
 */
 
 const allowedOrigins = [
- "http://localhost:3000",
- "http://localhost:5173",
- "https://fsadprofront.vercel.app",
- "https://*.vercel.app"
+  "http://localhost:3000",
+  "http://localhost:5173",
+  "https://fsadprofront.vercel.app"
 ];
 
 app.use(cors({
- origin: function(origin, callback) {
-  if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
-   callback(null, true);
-  } else {
-   callback(new Error('Not allowed by CORS'));
-  }
- },
- methods: ["GET","POST","PUT","DELETE"],
- allowedHeaders: ["Content-Type","Authorization"],
- credentials: true
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+
+    if (
+      allowedOrigins.includes(origin) ||
+      origin.endsWith(".vercel.app")
+    ) {
+      return callback(null, true);
+    }
+
+    return callback(null, true); // allow all (temp)
+  },
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true
 }));
 
-app.use(express.json());
-
-
-
-/*
- routes
-*/
-
-app.use("/api/auth", authRoutes);
-
-app.use("/api/donation", donationRoutes);
-
-app.use("/api/logistics", logisticsRoutes);
-
-/*
- NEW ROUTES REGISTERED
-*/
-
-app.use("/api/request", requestRoutes);
-
-app.use("/api/match", matchRoutes);
-
-
-
-/*
- test route
-*/
-
-app.get("/", (req, res) => {
-    
- res.send("FSAD Backend Running");
-
-});
-
-
-
-/*
- ensure PORT exists
-*/
-
-const PORT = process.env.PORT || 5000;
-
-
-
-/*
- start server
-*/
-
-app.listen(PORT, () => {
-
- console.log("Server running on port", PORT);
-
-});
+app.options("*", cors());
